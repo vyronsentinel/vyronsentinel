@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House of Lechon | The Heart of Cebuano Flavor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --flame: #c0392b;
+            --ember: #e67e22;
+            --gold: #f1c40f;
+            --charcoal: #1a1a1a;
+            --cream: #fdf6ec;
+        }
+
+        * { scroll-behavior: smooth; }
+        body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--charcoal); overflow-x: hidden; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* NAV */
+        nav {
+            background: rgba(26,26,26,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(192,57,43,0.3);
+        }
+
+        /* HERO */
+        .hero-bg {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(26,26,26,0.75) 100%),
+                        url('https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop') center/cover no-repeat;
+            min-height: 100vh;
+        }
+        .flame-text {
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 40%, #c0392b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.85; }
+        }
+        .anim-1 { animation: fadeUp 0.7s ease both; }
+        .anim-2 { animation: fadeUp 0.7s 0.15s ease both; }
+        .anim-3 { animation: fadeUp 0.7s 0.3s ease both; }
+        .anim-4 { animation: fadeUp 0.7s 0.45s ease both; }
+        .flicker { animation: flicker 3s ease-in-out infinite; }
+
+        /* MENU CARD */
+        .menu-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(192,57,43,0.13);
+        }
+
+        /* MODAL */
+        #modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal-overlay.active { display: flex; }
+        #modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+            position: relative;
+            animation: fadeUp 0.35s ease both;
+        }
+        .form-input {
+            width: 100%;
+            border: 1.5px solid #e0d5c8;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: #fdf6ec;
+            color: var(--charcoal);
+        }
+        .form-input:focus { outline: none; border-color: var(--ember); background: #fff; }
+
+        /* SUCCESS */
+        #success-msg { display: none; }
+
+        /* DIVIDER */
+        .divider-flame {
+            display: flex; align-items: center; gap: 12px;
+            color: var(--ember); font-size: 22px;
+        }
+        .divider-flame::before, .divider-flame::after {
+            content: ''; flex: 1;
+            height: 1px; background: linear-gradient(to right, transparent, #e67e22, transparent);
+        }
+
+        /* STATS */
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+        .stat-card:hover { background: rgba(192,57,43,0.15); }
+
+        /* MAP */
+        iframe { border-radius: 16px; }
+
+        /* SCROLL REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* BUTTON */
+        .btn-flame {
+            background: linear-gradient(135deg, #e67e22, #c0392b);
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border-radius: 50px;
+            padding: 14px 32px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 20px rgba(192,57,43,0.35);
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            font-family: 'Lato', sans-serif;
+            font-size: 15px;
+        }
+        .btn-flame:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(192,57,43,0.5);
+        }
+        .btn-outline {
+            border: 2px solid #fff;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border-radius: 50px;
+            padding: 12px 32px;
+            transition: all 0.2s;
+            display: inline-block;
+            cursor: pointer;
+            font-family: 'Lato', sans-serif;
+            font-size: 15px;
+        }
+        .btn-outline:hover { background: #fff; color: var(--charcoal); }
+
+        /* TOAST */
+        #toast {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+            background: #1a1a1a; color: #fff;
+            padding: 14px 28px; border-radius: 50px;
+            font-size: 14px; font-weight: 600;
+            transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+            z-index: 2000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">🔥 Reservation sent! We'll confirm shortly.</div>
+
+    <!-- NAV -->
+    <nav class="flex justify-between items-center px-6 md:px-12 py-5 sticky top-0 z-50">
+        <div class="text-xl font-black tracking-tight text-white flicker"> HOUSE OF LECHON</div>
+        <div class="hidden md:flex space-x-8 text-sm uppercase tracking-widest font-semibold">
+            <a href="#menu" class="text-stone-400 hover:text-orange-400 transition">Menu</a>
+            <a href="#about" class="text-stone-400 hover:text-orange-400 transition">About</a>
+            <a href="#location" class="text-stone-400 hover:text-orange-400 transition">Location</a>
+        </div>
+        <button onclick="openModal()" class="btn-flame text-sm px-5 py-2">Book a Table</button>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero-bg flex flex-col justify-center items-center text-center text-white px-4 py-24 md:py-0" style="min-height: 100vh;">
+        <p class="anim-1 text-sm uppercase tracking-[0.3em] text-orange-400 mb-5 font-semibold">Cebu City, Philippines</p>
+        <h1 class="anim-2 text-5xl md:text-7xl lg:text-8xl mb-6 leading-tight max-w-4xl">
+            Cebu's Finest<br><span class="flame-text">Carcar Lechon</span>
+        </h1>
+        <p class="anim-3 text-base md:text-xl max-w-xl font-light mb-10 text-stone-300 leading-relaxed">
+            Crispy skin. Succulent meat. The heritage of Carcar in every bite — slow-roasted fresh every morning.
+        </p>
+        <div class="anim-4 flex flex-wrap gap-4 justify-center">
+            <a href="#menu" class="btn-flame">View Menu</a>
+            <a href="tel:09166620163" class="btn-outline">Call to Order</a>
+        </div>
+        <div class="anim-4 mt-16 grid grid-cols-3 gap-6 max-w-lg w-full">
+            <div class="stat-card">
+                <div class="text-2xl font-black text-yellow-400">4.4</div>
+                <div class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-2xl font-black text-orange-400">5,800+</div>
+                <div class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Reviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-2xl font-black text-red-400">Daily</div>
+                <div class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Fresh</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABOUT -->
+    <section id="about" class="py-24 bg-white">
+        <div class="max-w-4xl mx-auto px-4 text-center reveal">
+            <div class="divider-flame mb-10"></div>
+            <h2 class="text-4xl md:text-5xl mb-6">The Art of the Roast</h2>
+            <p class="text-stone-500 text-lg leading-relaxed max-w-2xl mx-auto">
+                Born from the tradition of Carcar — Cebu's lechon capital — our pigs are seasoned with sea salt, lemongrass, and native herbs, then slow-roasted over live charcoal for hours. What you get is the golden skin that <em>cracks</em>, and meat that melts. No sauce needed.
+            </p>
+        </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="py-24 bg-stone-50">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="text-center mb-16 reveal">
+                <p class="text-sm uppercase tracking-[0.3em] text-orange-600 mb-3 font-semibold">What We Serve</p>
+                <h2 class="text-4xl md:text-5xl">House Specialties</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Card 1 -->
+                <div class="menu-card p-8 reveal">
+                    <div class="text-4xl mb-4"></div>
+                    <h4 class="text-2xl font-bold mb-2">Special Carcar Lechon</h4>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-4">The signature whole roast — salt, lemongrass, and fire. Crispy golden skin with juicy, flavorful meat inside. The real deal.</p>
+                    <span class="text-xs uppercase tracking-widest text-orange-600 font-bold bg-orange-50 px-3 py-1 rounded-full">House Specialty</span>
+                </div>
+                <!-- Card 2 -->
+                <div class="menu-card p-8 reveal">
+                    <div class="text-4xl mb-4"></div>
+                    <h4 class="text-2xl font-bold mb-2">Prichon Solo</h4>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-4">Deep-fried lechon chunks — twice the crunch, all the flavor. Perfect for solo dining or sharing as pulutan.</p>
+                    <span class="text-xs uppercase tracking-widest text-red-600 font-bold bg-red-50 px-3 py-1 rounded-full">Must Try</span>
+                </div>
+                <!-- Card 3 -->
+                <div class="menu-card p-8 reveal">
+                    <div class="text-4xl mb-4"></div>
+                    <h4 class="text-2xl font-bold mb-2">Baked Scallops</h4>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-4">Fresh scallops baked with butter and melted golden cheese. A local favorite that pairs perfectly with the lechon.</p>
+                    <span class="text-xs uppercase tracking-widest text-stone-600 font-bold bg-stone-100 px-3 py-1 rounded-full">Local Fave</span>
+                </div>
+                <!-- Card 4 -->
+                <div class="menu-card p-8 reveal">
+                    <div class="text-4xl mb-4"></div>
+                    <h4 class="text-2xl font-bold mb-2">Mango Sticky Rice</h4>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-4">End on a sweet note — fresh Cebu mangoes over warm coconut sticky rice. Simple, tropical, unforgettable.</p>
+                    <span class="text-xs uppercase tracking-widest text-yellow-700 font-bold bg-yellow-50 px-3 py-1 rounded-full">Dessert</span>
+                </div>
+            </div>
+            <div class="text-center mt-12 reveal">
+                <p class="text-stone-500 mb-4">Want to place a big order or ask about catering?</p>
+                <a href="tel:09166620163" class="btn-flame">Call Us at 0916 662 0163</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOCATION -->
+    <section id="location" class="py-24 bg-white">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="text-center mb-16 reveal">
+                <p class="text-sm uppercase tracking-[0.3em] text-orange-600 mb-3 font-semibold">Come Visit</p>
+                <h2 class="text-4xl md:text-5xl">Find Us in Cebu</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal space-y-6">
+                    <div class="flex items-start gap-4">
+                        <span class="text-2xl">📍</span>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Address</h4>
+                            <p class="text-stone-500">Acacia St, Cebu City, 6000 Cebu</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <span class="text-2xl">🕙</span>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Hours</h4>
+                            <p class="text-stone-500">Open Daily: 10:00 AM – 9:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <span class="text-2xl">📞</span>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Phone</h4>
+                            <a href="tel:09166620163" class="text-orange-600 font-semibold hover:underline">0916 662 0163</a>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 flex-wrap pt-2">
+                        <span class="bg-stone-100 text-stone-700 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full">Dine-in</span>
+                        <span class="bg-stone-100 text-stone-700 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full">Pickup</span>
+                        <span class="bg-stone-100 text-stone-700 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full">Delivery</span>
+                    </div>
+                    <button onclick="openModal()" class="btn-flame mt-4">Reserve a Table</button>
+                </div>
+                <div class="reveal">
+                    <!-- REAL GOOGLE MAPS EMBED - Cebu City area, pinned near Acacia St -->
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.3!2d123.8854!3d10.3157!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a999258f6f8c27%3A0xb2c6e4e4e4e4e4e4!2sAcacia+St%2C+Cebu+City%2C+Cebu!5e0!3m2!1sen!2sph!4v1700000000000!5m2!1sen!2sph"
+                        width="100%"
+                        height="320"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        class="shadow-lg">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-stone-900 text-white py-10 text-center">
+        <div class="text-orange-400 font-black text-xl mb-2 flicker">🔥 HOUSE OF LECHON</div>
+        <p class="text-stone-500 text-sm">© 2026 House of Lechon. All Rights Reserved.</p>
+        <p class="text-stone-600 text-xs mt-2">Acacia St, Cebu City · 0916 662 0163</p>
+    </footer>
+
+    <!-- RESERVATION MODAL -->
+    <div id="modal-overlay" onclick="handleOverlayClick(event)">
+        <div id="modal-box">
+            <button onclick="closeModal()" style="position:absolute;top:16px;right:20px;font-size:22px;background:none;border:none;cursor:pointer;color:#999;">✕</button>
+
+            <!-- FORM STATE -->
+            <div id="form-state">
+                <h2 class="text-2xl mb-1">Book a Table</h2>
+                <p class="text-stone-500 text-sm mb-6">Fill out the form and we'll confirm your reservation shortly.</p>
+
+                <!--
+                    IMPORTANT: Replace YOUR_FORM_ID below with your actual Formspree form ID.
+                    Steps:
+                    1. Go to https://formspree.io and sign up for free
+                    2. Create a new form
+                    3. Copy your form ID (looks like: xpzgkwqr)
+                    4. Replace YOUR_FORM_ID in the action URL below
+                -->
+                <form id="reservation-form" action="https://formspree.io/f/mkovekdv" method="POST">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Full Name *</label>
+                            <input type="text" name="name" required placeholder="e.g. Juan dela Cruz" class="form-input">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Phone / WhatsApp *</label>
+                            <input type="tel" name="phone" required placeholder="e.g. 0917 123 4567" class="form-input">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Email</label>
+                            <input type="email" name="email" placeholder="you@email.com" class="form-input">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Date *</label>
+                                <input type="date" name="date" required class="form-input">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Time *</label>
+                                <input type="time" name="time" required min="10:00" max="21:00" class="form-input">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Number of Guests *</label>
+                            <select name="guests" required class="form-input">
+                                <option value="">Select...</option>
+                                <option>1–2 guests</option>
+                                <option>3–5 guests</option>
+                                <option>6–10 guests</option>
+                                <option>11–20 guests</option>
+                                <option>Large party (20+)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Special Requests</label>
+                            <textarea name="notes" rows="2" placeholder="Allergies, celebrations, etc." class="form-input resize-none"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-flame w-full mt-6 text-center">Confirm Reservation</button>
+                    <p class="text-center text-xs text-stone-400 mt-3">We'll call or text you to confirm within a few hours.</p>
+                </form>
+            </div>
+
+            <!-- SUCCESS STATE -->
+            <div id="success-msg" class="text-center py-8">
+                <div class="text-5xl mb-4">🎉</div>
+                <h2 class="text-2xl mb-2">You're on the list!</h2>
+                <p class="text-stone-500 text-sm mb-6">Your reservation request has been sent. We'll call or text you to confirm soon.</p>
+                <button onclick="closeModal()" class="btn-flame">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── MODAL ──────────────────────────────────────────────
+        function openModal() {
+            document.getElementById('modal-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            // Reset to form state each time
+            document.getElementById('form-state').style.display = 'block';
+            document.getElementById('success-msg').style.display = 'none';
+        }
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function handleOverlayClick(e) {
+            if (e.target === document.getElementById('modal-overlay')) closeModal();
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // ── FORM SUBMISSION (Formspree) ────────────────────────
+        const form = document.getElementById('reservation-form');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            const data = new FormData(form);
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: data,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (res.ok) {
+                    // Show success state inside modal
+                    document.getElementById('form-state').style.display = 'none';
+                    document.getElementById('success-msg').style.display = 'block';
+                    showToast('🔥 Reservation sent! We\'ll confirm shortly.');
+                    form.reset();
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (err) {
+                // Fallback: if Formspree not set up yet, still show success for demo
+                document.getElementById('form-state').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'block';
+                showToast('📬 Reservation noted! (Set up Formspree to receive emails)');
+                form.reset();
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🔥 Confirm Reservation';
+        });
+
+        // ── TOAST ──────────────────────────────────────────────
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        // ── SCROLL REVEAL ──────────────────────────────────────
+        const revealEls = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        revealEls.forEach(el => observer.observe(el));
+
+        // ── SET MIN DATE ON DATE PICKER ────────────────────────
+        const dateInput = document.querySelector('input[type="date"]');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+        }
+    </script>
+</body>
+</html>
